@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/stylesPanorama.css" />
+    <title>Museo App</title>
+    <style>
+        #mainMedia {
+            height: 230px;
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            bottom: 180px;                   
+        }              
+
+            #mainMedia > #scanner {
+                border-collapse: collapse;
+                height: 40px;
+                width: 100%;
+                position: fixed;
+                top:180px;                
+            }
+
+                #mainMedia > #scanner .scanMedia {
+                    width: 50px;
+                    height:50px;
+                    background-image: url(img/Scan.png);
+                    -moz-background-size: 100%;
+                    background-size: 100%;
+                    background-repeat: no-repeat;
+                }
+
+                #mainMedia > #scanner .esquinaScan {
+                    width: 80px;
+                    background-image: url(img/Exposicion.png);
+                    -moz-background-size: 100%; 
+                    background-size:100%;                    
+                }
+
+                #mainMedia > #scanner .textoScan {                                        
+                    background-color:#bd8edd;
+                    text-align:right;
+                    vertical-align:middle;
+                    font-weight: bolder;
+                    font-size: 20px;
+                    padding-right: 20px;                                   
+                }
+
+        #mainContent {
+            height: auto;
+            position: fixed;
+            top: 250px;
+            width: 100%;
+            bottom: 50px;                     
+        }
+            #mainContent > h3 {                
+                position: fixed;
+                top : 220px;      
+                width: 100%;
+                font-size: 15px; 
+                text-align:right;                      
+            }
+             #mainContent > div {                
+                position:fixed;
+                overflow-y:auto;
+                font-size:17px;
+                width:100%;
+                bottom:100px;
+                top:260px;                
+            }
+        #mainMenu {
+            bottom: 0px;
+            position: fixed;
+            width: 100%;
+            background-color:#363636;
+        }
+
+            #mainMenu > div {
+                height: 35px;
+                color: #fff;
+                background-repeat: no-repeat;
+                text-align: right;
+                font-weight: bolder;
+                font-size: 20px;
+                padding-top: 25px;
+                padding-right: 20px;                
+                background-position-x:center;
+                background-position-y:center;
+                float:left;
+            }            
+
+            #mainMenu > #Home {
+                background-image: url('img/Home.png');
+                -moz-background-size: 100%;
+                background-size: 100%;                
+                width: 20%;
+            }
+            #mainMenu > #Headphone {
+                background-image: url('img/Headphone.png');
+                -moz-background-size: 50%;
+                background-size: 50%;                
+                width: 30%;                
+            }
+            #mainMenu > #Previous {
+                background-image: url('img/Previous.png');
+                -moz-background-size: 50%;
+                background-size: 50%;                
+                width: 15%;
+            }
+            #mainMenu > #Next {
+                background-image: url('img/Next.png');
+                -moz-background-size: 50%;
+                background-size: 50%;                
+                width: 15%;
+            }
+        .ClaseOculta {
+            visibility: collapse;
+            width: 0%;
+            height: 0%;
+        }
+        .ClaseVisible {
+            visibility:visible;
+            width:100%; 
+            height:100%
+        }              
+    </style>
+</head>
+<body>
+    <div id="mainMedia">         
+        <div id="ImagenDiv" style="width:100%;height:100%;">
+            <img id="ImagenExposicion" src="img/logo.png" style="width:100%; height:100%" />
+        </div>        
+        <table id="scanner">
+            <tr>
+                <td class="scanMedia">&nbsp;</td>                
+                <td class="esquinaScan">&nbsp;</td>
+                <td id="TituloExposiciontd" class="textoScan">Arte Basura</td>
+            </tr>
+        </table>
+    </div>
+    <div id="mainContent" style="background-color:transparent">
+        <h3 id="Vigenciah3">Del 10 de Marzo al 20 de Abril</h3>
+        <div id="DescripcionExpop">
+            El arte de utilizar la basura, pedazos de hierro, papel y pilas que se desechan.
+            Las obras de arte de Tim Noble y Sue Webster.      
+        </div> 
+        <nav id="mainMenu">            
+            <div id="Home">                
+            </div>            
+            <div id="Headphone" class="ClaseOculta">                
+            </div>
+            <div id="Previous">                
+            </div>
+            <div id="Next">                
+            </div>
+        </nav>             
+    </div>  
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="js/panorama.min.js"></script> 
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        var ServiceURL = 'http://localhost/Services/';
+        var lenguajeSeleccionado = "ES";
+        var idObtenido = "";
+        $(document).ready(function () {                      
+            var urlVisitada = String(document.location.href);            
+            if (urlVisitada.indexOf("?") >= 0) {
+                idObtenido = urlVisitada.substring(urlVisitada.lastIndexOf("?") + 1, urlVisitada.lastIndexOf("?") + 37);                
+                CargarExposicion(idObtenido, lenguajeSeleccionado)
+            } else {                
+                $.ajax({
+                    type: "GET",
+                    url: ServiceURL + 'ObtenerExposicionSiguiente',
+                    data: { idCurrentExpo: "0", idiomaSeleccionado: lenguajeSeleccionado },
+                    dataType: 'Text',
+                    success: function (data) {                        
+                        var res = $.parseJSON(data)                        
+                        url = "exposiciones.html?" + res;                        
+                        $(location).attr('href', url);
+                    }
+                });
+            }
+            $("#Home").click(function () {
+                url = "index.html";
+                $(location).attr('href', url);
+            });
+            $("#Next").click(function () {
+                if (localStorage.getItem("mostrarObras") == "0"){
+                    $.ajax({
+                        type: "GET",
+                        url: ServiceURL + 'ObtenerExposicionSiguiente',
+                        data: { idCurrentExpo: idObtenido, idiomaSeleccionado: lenguajeSeleccionado },
+                        dataType: 'Text',
+                        success: function (data) {
+                            var res = $.parseJSON(data)
+                            if (res != idObtenido) {
+                                url = "exposiciones.html?" + res;
+                                $(location).attr('href', url);
+                            }
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: "GET",
+                        url: ServiceURL + 'VerificarSiguienteObra',
+                        data: { idExposicion: idObtenido, secuenciaObra: 0 },
+                        dataType: 'Text',
+                        success: function (data) {
+                            if (data != "") {
+                                data = data.replace('"', '');
+                                url = "obras.html?" + data;
+                                $(location).attr('href', url);
+                            }
+                        }
+                    });
+                }
+            });
+
+        });
+        app.initialize();
+        function CargarExposicion(idObtenido, lenguajeSeleccionado) {            
+            $.ajax({
+                type: "GET",
+                url: ServiceURL + 'ObtieneExposicion',
+                data: { idExpoleido: idObtenido, idiomaSeleccionado: lenguajeSeleccionado },
+                dataType: 'Text',
+                success: function (data) {                    
+                    var res = $.parseJSON(data)                    
+                    if (res.Fotografia != null)
+                        $("#ImagenExposicion")[0].src = res.Fotografia;
+                    $("#TituloExposiciontd")[0].innerHTML = res.Nombre;
+                    $("#Vigenciah3")[0].innerHTML = res.fechaCompleta;
+                    $("#DescripcionExpop")[0].innerHTML = res.Descripcion;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

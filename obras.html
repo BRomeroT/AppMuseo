@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/stylesPanorama.css" />
+    <title>Museo App</title>
+    <style>
+        #mainMedia {
+            height: 230px;
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            bottom: 180px;            
+        }
+
+        #mainMedia > #TituloExposicionh3 {
+                border-collapse: collapse;
+                background-color:#363636;
+                height: 20px;
+                width: auto;
+                position: fixed;
+                text-align:left;
+                margin:0px;
+                padding-left:10px;
+                padding-right:10px;
+                vertical-align:central;
+                top:0px;                
+            }
+        #mainMedia > #Mash3 {
+                border-collapse: collapse;
+                height: 50px;
+                width: 50px;
+                position: fixed;
+                text-align:right;                
+                top:65px;                     
+                right:5px;       
+            }
+        #mainMenu > img:hover {
+                filter: alpha(opacity=80);
+                opacity: 0.8;
+            }
+
+            #mainMedia > #scanner {
+                border-collapse: collapse;
+                height: 40px;
+                width: 100%;
+                position: fixed;
+                top:180px;                
+            }
+
+                #mainMedia > #scanner .scanMedia {
+                    width: 50px;
+                    height:50px;
+                    background-image: url(img/Scan.png);
+                    -moz-background-size: 100%;
+                    background-size: 100%;
+                    background-repeat: no-repeat;
+                }
+
+                #mainMedia > #scanner .esquinaScan {
+                    width: 30px;
+                    background-image: url(img/EsquinaReconocimiento.png);
+                }
+
+                #mainMedia > #scanner .textoScan {                    
+                    background-image: url(img/ReconocimientoArteFondo.png);                    
+                    text-align:right;
+                    vertical-align:middle;
+                    font-weight: bolder;
+                    font-size: 20px;
+                    padding-right: 20px;
+                }
+
+        #mainContent {
+            height: auto;
+            position: fixed;
+            top: 230px;
+            width: 100%;
+            bottom: 0px;                     
+        }
+            #mainContent > h5 {                
+                position: fixed;
+                top : 210px;      
+                width: 100%;
+                font-size: 15px; 
+                text-align:right;                      
+            }
+        #mainMenu {
+            bottom: 0px;
+            position: fixed;
+            width: 100%;
+            background-color:#363636;
+        }
+
+            #mainMenu > div {
+                height: 35px;
+                color: #fff;
+                background-repeat: no-repeat;
+                text-align: right;
+                font-weight: bolder;
+                font-size: 20px;
+                padding-top: 25px;
+                padding-right: 20px;                
+                background-position-x:center;
+                background-position-y:center;
+                float:left;
+            }
+
+            .ui-panorama-item > h2 {
+                -moz-background-size: contain; 
+                background-size:contain;
+                background-repeat:no-repeat;
+                background-position-x:left;
+                background-position-y:center;
+                text-align:right;
+                height:35px;
+                margin-right:10px;                
+            }
+
+            .ui-panorama-item > p {
+               font-family:'Segoe WP';
+               font-size:14px;
+            }
+
+            #mainMenu > #Home {
+                background-image: url('img/Home.png');
+                -moz-background-size: 100%;
+                background-size: 100%;                
+                width: 20%;
+            }
+            #mainMenu > #Headphone {
+                background-image: url('img/Headphone.png');
+                -moz-background-size: 50%;
+                background-size: 50%;                
+                width: 30%;                
+            }
+            #mainMenu > #Previous {
+                background-image: url('img/Previous.png');
+                -moz-background-size: 50%;
+                background-size: 50%;                
+                width: 15%;
+            }
+            #mainMenu > #Next {
+                background-image: url('img/Next.png');
+                -moz-background-size: 50%;
+                background-size: 50%;                
+                width: 15%;
+            }
+        .ClaseOculta {
+            visibility:collapse;
+            width:0%; 
+            height:0%
+        }
+        .ClaseVisible {
+            visibility:visible;
+            width:100%; 
+            height:100%
+        }
+           
+    </style>
+</head>
+<body>
+    <div id="mainMedia"> 
+        <h3 id="TituloExposicionh3">Titulo de la exposicon a mostrar</h3> 
+        <img src="img/Right.png" id="Mash3"/> 
+        <div id="ImagenDiv" class="ClaseVisible" >
+            <img id="ImagenObra" src="img/logo.png" style="width:100%; height:100%" />
+        </div>
+        <div id="VideoDiv" class="ClaseOculta" >
+            <video controls id="SourceVideoTag" style="width:100%; height:100%" >                        
+                <source type="video/mp4">                
+                Your browser does not support the video tag.             
+            </video> 
+        </div>
+        <table id="scanner">
+            <tr>
+                <td class="scanMedia">&nbsp;</td>                
+                <td class="esquinaScan">&nbsp;</td>
+                <td id="TituloObratd" class="textoScan">Arte Basura</td>
+            </tr>
+        </table>
+    </div>
+    <div id="mainContent">
+        <h5 id="Autorh5">Tim Noble y Sue Webster</h5>
+        <input id="IdExposicionHidden" type="hidden" />
+        <input id="SecuenciaObraHidden" type="hidden" />
+        <div data-role="page" id="index">
+            <div class="ui-panorama PanoramaMedia">				
+				<div class='ui-panorama-items'>
+					<div class="ui-panorama-item" style="background-color:transparent;">						
+                        <h2 style="background-color:#be8bc9; background-image: url('img/Descripcion.png');">Descripción</h2>
+                        <p id="DescripcionObrap">Descripcion</p> 
+					</div>
+					<div class="ui-panorama-item" style="background-color:transparent;">
+						<h2 style="background-color:#00b3ff; background-image: url('img/Explicacion.png');">Explicación</h2>
+						<p id="ExplicacionObrap">Explicacion</p>
+					</div>	
+                    <div class="ui-panorama-item" style="background-color:transparent;">
+						<h2  style="background-color:#b0d632; background-image: url('img/Historia.png');">Historia</h2>
+						<p id="HistoriaObrap">Hstoria</p>
+					</div>	
+                     <div class="ui-panorama-item" style="background-color:transparent;">
+						<h2  style="background-color:#e1a446; background-image: url('img/Curiosidades.png');">Notas curiosas</h2>
+						<p id="CuriosidadesObrap">Curiosidades</p>
+					</div>					
+				</div>
+			</div>            
+        </div>        
+        <nav id="mainMenu">            
+            <div id="Home">                
+            </div>            
+            <div id="Headphone" class="ClaseOculta">   
+                <audio id="SourceAudioTag">
+                  <source src="horse.mp3" type="audio/mpeg">                  
+                  Your browser does not support this audio format.
+                </audio>             
+            </div>
+            <div id="Previous">                
+            </div>
+            <div id="Next">                
+            </div>
+        </nav>             
+    </div>  
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="js/panorama.min.js"></script> 
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">       
+        $(document).ready(function () {
+            $.ajaxSetup({ cache: false });
+            var ServiceURL = 'http://localhost/Services/';
+            var idiomaSeleccionado = "ES";
+            var urlVisitada = String(document.location.href);            
+            if (urlVisitada.indexOf("?") >= 0)
+            {                
+                var idObtenido = urlVisitada.substring(urlVisitada.lastIndexOf("?") + 1, urlVisitada.lastIndexOf("?") + 37);                
+                $.ajax({
+                    type: "GET",
+                    url: ServiceURL + 'ObtenerInformacionObra',
+                    data: { idObraLeido: idObtenido, idiomaSeleccionado: idiomaSeleccionado },
+                    dataType: 'Text',
+                    success: function (data) {
+                        var res = $.parseJSON(data)                        
+                        $("#TituloExposicionh3")[0].innerHTML = res.TituloExposicion;
+                        $("#TituloObratd")[0].innerHTML = res.Titulo;
+                        $("#Autorh5")[0].innerHTML = res.Autor;
+                        $("#TituloObratd")[0].innerHTML = res.Titulo;
+                        if (res.Fotografias != null)
+                            $("#ImagenObra")[0].src = res.Fotografias;
+                        if (res.Videos == null) {
+                            $("#Mash3")[0].className = "ClaseOculta";
+                        }
+                        else {
+                            $("#SourceVideoTag")[0].src = res.Videos;
+                        }
+
+                        if (res.Audios != null)
+                        {
+                            $("#Headphone")[0].className = "ClaseVisible";
+                            $("#SourceAudioTag")[0].src = res.Audios;
+                        }
+                        $("#DescripcionObrap")[0].innerHTML = res.Descripcion;
+                        $("#ExplicacionObrap")[0].innerHTML = res.Explicacion;
+                        $("#HistoriaObrap")[0].innerHTML = res.Historia;
+                        $("#CuriosidadesObrap")[0].innerHTML = res.NotasCuriosas;
+                        $("#IdExposicionHidden")[0].value = res.idExposicionPertenece;
+                        $("#SecuenciaObraHidden")[0].value = res.SecuenciaObra;
+                    }
+                });
+            }
+                        
+            $("#Mash3").click(function () {
+                if ($("#ImagenDiv")[0].className == "ClaseVisible") {                    
+                    $("#SourceVideoTag")[0].play();
+                    $("#Mash3")[0].src = "img/Left.png"
+                    $("#ImagenDiv").switchClass("ClaseVisible", "ClaseOculta", 200, "easeOutBounce");
+                    $("#VideoDiv").switchClass("ClaseOculta", "ClaseVisible", 200, "easeOutBounce");                    
+                }
+                else {                    
+                    $("#SourceVideoTag")[0].pause();
+                    $("#Mash3")[0].src = "img/Right.png"
+                    $("#ImagenDiv").switchClass("ClaseOculta", "ClaseVisible", 200, "easeOutBounce");
+                    $("#VideoDiv").switchClass("ClaseVisible", "ClaseOculta", 200, "easeOutBounce");
+                }
+            });
+
+            $("#Headphone").click(function () {
+                if ($("#SourceAudioTag")[0].paused)
+                    $("#SourceAudioTag")[0].play();
+                else
+                    $("#SourceAudioTag")[0].pause();
+            });
+
+            $("#Next").click(function () {                
+                $.ajax({
+                    type: "GET",
+                    url: ServiceURL + 'VerificarSiguienteObra',
+                    data: { idExposicion: $("#IdExposicionHidden")[0].value, secuenciaObra: $("#SecuenciaObraHidden")[0].value },
+                    dataType: 'Text',
+                    success: function (data) {                        
+                        if (data != "") {
+                            data = data.replace('"', '');
+                            url = "obras.html?" + data;
+                            $(location).attr('href', url);
+                        }
+                    }
+                });
+            });
+
+            $("#Previous").click(function () {
+                if ($("#SecuenciaObraHidden")[0].value == "1")
+                {
+                    url = "exposiciones.html?" + $("#IdExposicionHidden")[0].value;                    
+                    $(location).attr('href', url);
+                }
+                else
+                {
+                    $.ajax({
+                        type: "GET",
+                        url: ServiceURL + 'ObteneridObraAnterior',
+                        data: { idExposicion: $("#IdExposicionHidden")[0].value, secuenciaObra: $("#SecuenciaObraHidden")[0].value },
+                        dataType: 'Text',
+                        success: function (data) {
+                            if (data != "") {
+                                data = data.replace('"', '');
+                                url = "obras.html?" + data;
+                                $(location).attr('href', url);
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#Home").click(function () {
+                url = "index.html";
+                $(location).attr('href', url);
+            });
+        });
+        app.initialize();
+        (function ($) {
+            $.fn.disableSelection = function () {
+                return this
+                .attr('unselectable', 'on')
+                .css('user-select', 'none')
+                .on('selectstart', false);
+            };
+        })(jQuery);        
+        $(function () {
+            $(".PanoramaMedia").disableSelection();
+            $(".PanoramaMedia").panorama({
+                debug: true,
+                clickedWrapperClass: 'ui-panorama-click-wrapper',
+                clickedWrapperZindex: 2,
+                clickedElementClass: 'ui-panorama-clicked',
+                animationDuration: 500,
+                animationEasing: 'easeOutExpo',
+                titleSelector: 'h1',
+                itemsContainerSelector: '.ui-panorama-items',
+                itemSelector: '.ui-panorama-item',
+                itemsGapPercentage: 10, /* resize 'screens' */
+                itemsLeftMarginPercent: 0, /* add margin-left to every screen */
+                totalNumberOfItems: 4, /*IMPORTANTE: Numero total de paginas a mostrar si el numero no coincide con lo que se muestra hace un efecto raro*/
+                waitXpercentage: 5, /* prevent any horiaontal move when user moved screen less than 5% */
+                waitYpercentage: 3, /* prevent any vertical move when user moved screen less than 3% */
+                backPointPercentage: 2, /* prevent swipe when user moved screen less than 30% */
+                controlInitializedEventName: 'controlInitialized',
+                selectedItemChangedEventName: 'selectedItemChanged'
+                ,altoPanorama : '230px'
+            });
+        })      
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<!--
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+-->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Museo App</title>
+    <style>
+        #mainArea {
+            height: auto;
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            bottom: 180px;
+            background-image: url(img/logo.png);
+            -moz-background-size: 100%;
+            background-size: 100%;
+        }
+
+            #mainArea > #scanner {
+                border-collapse: collapse;
+                height: 91px;
+                width: 100%;
+                position: fixed;
+                bottom: 274px;
+            }
+
+                #mainArea > #scanner .scan {
+                    width: 110px;
+                    background-image: url(img/Scan.png);
+                    background-repeat: no-repeat;
+                }
+
+                #mainArea > #scanner .esquinaScan {
+                    width: 30px;
+                    background-image: url(img/EsquinaReconocimiento.png);
+                }
+
+                #mainArea > #scanner .textoScan {
+                    background-image: url(img/ReconocimientoArteFondo.png);
+                    text-align:right;
+                    vertical-align:middle;
+                    font-weight: bolder;
+                    font-size: 20px;
+                    padding-right: 20px;
+                }
+
+        #mainMenu {
+            bottom: 0px;
+            position: fixed;
+            width: 100%;
+        }
+
+            #mainMenu > div {
+                height: 45px;
+                color: #fff;
+                background-repeat: no-repeat;
+                text-align: right;
+                font-weight: bolder;
+                font-size: 20px;
+                padding-top: 25px;
+                padding-right: 20px;
+                cursor:pointer;
+            }
+            #mainMenu > div:hover {
+                filter: alpha(opacity=80);
+                opacity: 0.8;
+            }
+
+            #mainMenu > #guiaInteractiva {
+                background-color: #9a67cc;
+                background-image: url('img/GuiaInteractiva.png');
+            }
+
+            #mainMenu > #mapaMuseo {
+                background-color: #8daa00;
+                background-image: url('img/MapaDeMuseo.png');
+            }
+
+            #mainMenu > #buscar {
+                background-color: #0099cb;
+                background-image: url('img/Buscar.png');
+            }
+
+            #mainMenu > #idioma {
+                background-color: #ff9934;
+                background-image: url('img/Idioma.png');
+            }
+    </style>
+</head>
+<body>
+    <div id="mainArea">
+        <table id="scanner">
+            <tr>
+                <td class="scan">&nbsp;</td>
+                <td class="esquinaScan">&nbsp;</td>
+                <td class="textoScan">escanear arte</td>
+            </tr>
+        </table>
+    </div>
+    <nav id="mainMenu">
+        <div id="guiaInteractiva">
+            guía interactiva
+        </div>
+        <div id="mapaMuseo">
+            mapa del museo
+        </div>
+        <div id="buscar">
+            buscar
+        </div>
+        <div id="idioma">
+            idioma
+        </div>       
+    </nav>
+    <!--<div class="app">
+            <h1>Apache Cordova</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+        </div>-->
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {            
+            app.initialize();
+            localStorage.setItem("mostrarObras", "0");
+            $.ajaxSetup({ cache: false });
+            var ServiceURL = 'http://localhost/Services/';            
+            $("#guiaInteractiva").click(function () {
+                localStorage.setItem("mostrarObras", "0");
+                url = "exposiciones.html";                
+                $(location).attr('href', url);
+            });            
+            //$("#ClaveaBuscar")[0].value = "53D74DC2-FC4B-4736-9E74-6842BC952022";
+
+            $("#scanner").click(function () {
+                EscanearCodigo();
+            });
+            function EscanearCodigo() {                
+                document.addEventListener("intel.xdk.device.barcode.scan", function (evt) {                    
+                    if (evt.success == true) {                        
+                        console.log(evt.codedata);                                                                            
+                        RedireccionarScaneo(evt.codedata);
+                    } else {
+                        //failed scan
+                        alert("Fallo de scaneo");
+                        console.log("failed scan");
+                    }
+                }, false);
+                intel.xdk.device.scanBarcode();
+            }
+            function RedireccionarScaneo(URLEscaneada) {
+                localStorage.setItem("mostrarObras", "1");
+                $.ajax({
+                    url: ServiceURL + 'VerificarTipoConsultado',
+                    data: { idEscaneado: URLEscaneada },
+                    dataType: 'Text',
+                    success: function (data) {                        
+                        var res = $.parseJSON(data)
+                        if (res == "obra") {
+                            url = "obras.html?" + URLEscaneada;
+                            $(location).attr('href', url);
+                        }
+                        else if (res == "expo") {
+                            url = "exposiciones.html?" + URLEscaneada;
+                            $(location).attr('href', url);
+                        }
+                        else {
+                            alert("El QR escaneado no tiene ningun vinculo");
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
