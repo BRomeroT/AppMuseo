@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="format-detection" content="telephone=no" />    
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/stylesPanorama.css" />
+    <title>Museo App</title>
+    <style>
+        #mainMedia {
+            height: 195px;
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            bottom: 210px;
+            background-image: url(img/logo.png);
+            -moz-background-size: 100%;
+            background-size: 100%;              
+        }              
+
+            #mainMedia > #scanner {
+                border-collapse: collapse;
+                height: 40px;
+                width: 100%;
+                position: fixed;
+                top:150px;                
+            }
+
+                #mainMedia > #scanner .scanMedia {
+                    width: 50px;
+                    height:50px;
+                    background-image: url(img/Scan.png);
+                    -moz-background-size: 100%;
+                    background-size: 100%;
+                    background-repeat: no-repeat;
+                }
+
+                #mainMedia > #scanner .esquinaScan {
+                    width: 80px;
+                    background-image: url(img/Buscar.png);
+                    -moz-background-size: 100%; 
+                    background-size:100%; 
+                    background-repeat:no-repeat;                    
+                }
+
+                #mainMedia > #scanner .textoScan {                                        
+                    background-color:#0099cb;
+                    text-align:right;
+                    vertical-align:middle;
+                    font-weight: bolder;
+                    font-size: 20px;
+                    padding-right: 20px;                                   
+                }
+
+        #mainContent {
+            height: auto;
+            position: fixed;
+            top: 190px;
+            width: 100%;
+            bottom: 50px;
+            background-color:transparent;            
+        }
+          
+        #busquedaText {
+            position: fixed;
+            top: 193px;            
+            width:100%;            
+        }
+
+        .TextoInicial {
+            color:grey;
+            font-style:oblique;
+        }
+        .TextoModificado {
+            color:black;
+            font-style:italic;
+        }
+
+        #tabs {
+            position: fixed;
+            top: 201px;  
+            height:28px; 
+            padding-top: 0px;
+            padding-left:10px;
+            width:100%;
+            background-color:#00b3ff;                   
+        }
+
+        .liUnselectedClass {
+            display: inline;
+            list-style-type: none;
+            padding-right: 20px;
+            font-size: large;
+            font-stretch: condensed;
+        }
+
+        .liselectedClass {
+            display: inline;
+            list-style-type: none;
+            padding-right: 20px;
+            font-size: x-large;
+            font-stretch: extra-condensed;
+        }
+                      
+             #mainContent > div {                
+                position:fixed;
+                overflow-y:auto;
+                font-size:17px;
+                width:100%;
+                bottom:100px;
+                top:260px;                
+            }
+        #mainMenu {
+            bottom: 0px;
+            position: fixed;
+            width: 100%;
+            background-color:#363636;
+        }
+
+            #mainMenu > div {
+                height: 35px;
+                color: #fff;
+                background-repeat: no-repeat;
+                text-align: right;
+                font-weight: bolder;
+                font-size: 20px;
+                padding-top: 25px;
+                padding-right: 5px;                
+                background-position-x:center;
+                background-position-y:center;
+                float:left;
+            }            
+
+            #mainMenu > #Home {
+                background-image: url('img/Home.png');
+                -moz-background-size: 100%;
+                background-size: 100%;                
+                width: 30%;
+            }
+
+        #mainContent > #ResultadoBusqueda {            
+            top:250px;
+            bottom:45px;
+            max-height:80%;
+            width:100%;            
+            align-self:stretch;            
+            overflow-y:auto;
+        }
+        #ResultadoBusqueda > .controlBusqueda {
+            width:100%;
+            height:100px;            
+            position:relative;
+            float: left;
+            vertical-align:top;                                                            
+        }        
+    </style>
+</head>
+<body>
+    <div id="mainMedia">                 
+        <table id="scanner">
+            <tr>
+                <td class="scanMedia">&nbsp;</td>                
+                <td class="esquinaScan">&nbsp;</td>
+                <td id="buscarEncabezado" class="textoScan">Buscar</td>
+            </tr>
+        </table>
+    </div>
+    <div id="mainContent">
+        <input id="busquedaText" value="Escriba el nombre de la obra o su autor..." class="TextoInicial"/>        
+            <ul id="tabs">
+                <li class="MetodoBusqueda liUnselectedClass" id="AutoresBusqueda">autores</li>
+                <li class="MetodoBusqueda liUnselectedClass" id="ObrasBusqueda">obras</li>
+            </ul>        
+        <input type="hidden" id="TipoBusqueda" />        
+        <div id="ResultadoBusqueda">
+
+        </div>
+        <nav id="mainMenu">            
+            <div id="Home">                
+            </div>            
+            <div>                
+            </div>
+            <div>
+            </div>
+            <div>                           
+            </div>
+        </nav>             
+    </div>  
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>    
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        $(document).bind("mobileinit", function () {
+            $.mobile.allowCrossDomainPages = true;
+        });
+        $.support.cors = true;
+        var ServiceURL = localStorage.getItem("ServerServiceURL");
+        var lenguajeSeleccionado = localStorage.getItem("lenguajeApp");        
+        if (localStorage.getItem("lenguajeApp") != "ES") {
+            $("#buscarEncabezado")[0].innerText = localStorage.getItem("buscarTraducido");
+            $("#busquedaText")[0].value = localStorage.getItem("textDefaultTraducido");
+            $("#AutoresBusqueda")[0].innerText = localStorage.getItem("autoresTraducido");
+            $("#ObrasBusqueda")[0].innerText = localStorage.getItem("obrasTraducido");
+        }
+        else {
+            localStorage.setItem("textDefaultTraducido","Escriba el nombre de la obra o su autor...");
+            localStorage.setItem("textBusquedaVaciaTraducido", "No se encontraron obras ni autores en exposicion con filtro ");
+        }
+        $(document).ready(function () {
+            $("#busquedaText").focus(function () {
+                if ($("#busquedaText")[0].value == localStorage.getItem("textDefaultTraducido")) {
+                    $("#busquedaText").switchClass("TextoInicial", "TextoModificado", 0)
+                    $("#busquedaText")[0].value = "";
+                }
+            });
+
+            $("#busquedaText").blur(function () {
+                if ($("#busquedaText")[0].value == "") {
+                    $("#busquedaText").switchClass("TextoModificado", "TextoInicial", 0);
+                    $("#busquedaText")[0].value = localStorage.getItem("textDefaultTraducido");
+                }
+            });
+
+            $("#busquedaText").keyup(function (e) {                
+                if (e.keyCode == 13)                    
+                {                    
+                    Buscar();                    
+                }                
+            });
+
+            $(".MetodoBusqueda").click(function () {                
+                $(".liselectedClass").switchClass("liselectedClass", "liUnselectedClass", 0);
+                $("#" + this.id).switchClass("liUnselectedClass", "liselectedClass", 0);                
+                $("#TipoBusqueda")[0].value = this.id;                
+                if ($("#busquedaText")[0].value != "" && $("#busquedaText")[0].value != localStorage.getItem("textDefaultTraducido")) {
+                    Buscar();
+                }
+            });
+
+            $("#Home").click(function () {
+                url = "index.html";
+                $(location).attr('href', url);
+            });
+
+            $("#AutoresBusqueda").click();
+
+            function appendText(data) {
+                if (data.length > 0) {
+                    for (var x = 0; x < data.length; x++) {
+                        var controlBusqueda = "<div class='controlBusqueda' onClick='Redirigir(this.id)' id=" + data[x].IdObra + ">"
+                                                + "<table style='width:100%;height:100%;'>"
+                                                    + "<tr>"
+                                                        + "<td  style='background-image: url(" + data[x].Fotografias + "); background-repeat: no-repeat; -moz-background-size: contain;background-size:contain;background-position:center;width:40%;background-color:transparent;' rowspan='2'></td>"
+                                                        + "<td style='text-align:left;font-size:x-large;font-stretch:condensed;'>"
+                                                            + data[x].Titulo
+                                                        + "</td>"
+                                                    + "</tr>"
+                                                    + "<tr>"
+                                                        + "<td style='text-align:left;vertical-align:top;font-size:small;'>"
+                                                            + data[x].Autor
+                                                        + "</td>"
+                                                    + "</tr>"
+                                                + "</table>"
+                                             + "</div>";
+                        $("#ResultadoBusqueda").append(controlBusqueda);
+                    }
+                }
+                else {
+                    var controlBusqueda = "<div class='controlBusqueda' onClick='Redirigir(this.id)' id='BusquedaVacia' style='overflow-wrap:break-word;background-color:#ffc000;color:black;font-style:italic;text-align:justify;vertical-align:central;'>"
+                                            + localStorage.getItem("textBusquedaVaciaTraducido") +'"' + $("#busquedaText")[0].value + '"'
+                                             + "</div>";
+                    $("#ResultadoBusqueda").append(controlBusqueda);
+                }               
+            }
+
+            function Buscar() {
+                $("#ResultadoBusqueda").empty();
+                $.ajax({
+                    type: "GET",
+                    url: ServiceURL + 'ConsultarObrasenExposicion',
+                    data: { filtro: $("#busquedaText")[0].value, idiomaSeleccionado: lenguajeSeleccionado, esPorAutor: $("#TipoBusqueda")[0].value },
+                    dataType: 'json',
+                    success: function (data) {
+                        appendText(data);
+                        $("#busquedaText").blur();
+                    }
+                });
+            }            
+
+        });
+       
+        app.initialize();
+        function Redirigir(obj) {
+            if (obj != "BusquedaVacia")
+            {                
+                localStorage.setItem("AbiertaDesdeBuscar", "1");
+                url = "obras.html?" + obj;
+                $(location).attr('href', url);
+            }
+        }
+      
+    </script>
+</body>
+</html>

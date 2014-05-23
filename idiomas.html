@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/stylesPanorama.css" />
+    <title>Museo App</title>
+    <style>
+        #mainMedia {
+            height: 230px;
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            background-image: url(img/logo.png);
+            -moz-background-size: 100%;
+            background-size: 100%;
+            bottom: 180px;                   
+        }              
+
+            #mainMedia > #scanner {
+                border-collapse: collapse;
+                height: 40px;
+                width: 100%;
+                position: fixed;
+                top:178px;                
+            }
+
+                #mainMedia > #scanner .scanMedia {
+                    width: 50px;
+                    height:50px;
+                    background-image: url(img/Scan.png);
+                    -moz-background-size: 100%;
+                    background-size: 100%;
+                    background-repeat: no-repeat;
+                }
+
+                #mainMedia > #scanner .esquinaScan {
+                    width: 80px;
+                    background-image: url(img/Idioma.png);
+                    -moz-background-size: 100%; 
+                    background-size:100%;                                        
+                }
+
+                #mainMedia > #scanner .textoScan {                                        
+                    background-color:#ff9934;
+                    text-align:right;
+                    vertical-align:middle;
+                    font-weight: bolder;
+                    font-size: 20px;
+                    padding-right: 20px;                                   
+                }
+
+        #mainContent {
+            height: auto;
+            position: fixed;
+            top: 250px;
+            width: 100%;
+            bottom: 50px;                     
+        }
+            
+             #mainContent > div {                
+                position:fixed;
+                overflow-y:auto;
+                font-size:17px;
+                width:100%;
+                bottom:80px;
+                top:250px;                                  
+            }
+        #mainMenu {
+            bottom: 0px;
+            position: fixed;
+            width: 100%;
+            background-color:#363636;
+        }
+
+            #mainMenu > div {
+                height: 35px;
+                color: #fff;
+                background-repeat: no-repeat;
+                text-align: right;
+                font-weight: bolder;
+                font-size: 20px;
+                padding-top: 25px;
+                padding-right: 5px;                
+                background-position-x:center;
+                background-position-y:center;
+                float:left;
+            }            
+
+            #mainMenu > #Home {
+                background-image: url('img/Home.png');
+                -moz-background-size: 100%;
+                background-size: 100%;                
+                width: 30%;
+            }
+            #mainMenu > #SaveButton {
+                background-image: url('img/Save.png');
+                -moz-background-size: 50%;
+                background-size: 50%;
+                width: 30%;
+            }
+
+        #ResultadoBusqueda > .controlLenguaje {
+            width: 80%;
+            height: 50px;
+            position: relative;
+            float: left;
+            vertical-align: central;  
+            left:10px;          
+        }
+
+        .lenguajeSelected {
+             width: 80%;
+            height: 50px;
+            position: relative;
+            float: left;
+            vertical-align: central;  
+            left:10px;          
+            font-size:large;
+            color:orange;
+        }
+                  
+    </style>
+</head>
+<body>
+    <div id="mainMedia">                      
+        <table id="scanner">
+            <tr>
+                <td class="scanMedia">&nbsp;</td>                
+                <td class="esquinaScan">&nbsp;</td>
+                <td id="idiomaEncabezado" class="textoScan">idioma</td>
+            </tr>
+        </table>
+    </div>
+    <div id="mainContent" style="background-color:transparent">        
+        <div id="ResultadoBusqueda">             
+        </div> 
+        <nav id="mainMenu">            
+            <div id="Home">                
+            </div>            
+            <div id="SaveButton">                
+                <input id="lenguajeSeleccionado" type="hidden" />
+            </div>
+            <div id="Previous">                
+            </div>
+            <div id="Next">                
+            </div>
+        </nav>             
+    </div>  
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>    
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        $(document).bind("mobileinit", function () {
+            $.mobile.allowCrossDomainPages = true;
+        });
+        $.support.cors = true;
+        var ServiceURL = localStorage.getItem("ServerServiceURL");
+        var idiomaActual = localStorage.getItem("lenguajeApp");
+        if (localStorage.getItem("lenguajeApp") != "ES") {
+            $("#idiomaEncabezado")[0].innerText = localStorage.getItem("idiomaTraducido");
+        }
+
+        $(document).ready(function () {            
+            $("#Home").click(function () {
+                url = "index.html";
+                $(location).attr('href', url);
+            });
+            $("#SaveButton").click(function () {
+                CambiaIdioma();
+                url = "index.html";
+                $(location).attr('href', url);
+            });
+            ObtenerLenguajes();           
+        });//FIN document.ready
+        app.initialize();
+        function ObtenerLenguajes() {
+            $.ajax({
+                type: "GET",
+                url: ServiceURL + 'ObtenerLenguajes',                
+                dataType: 'Text',
+                success: function (data) {                    
+                    data = JSON.parse(data);
+                    appendlanguages(data);
+                }
+            });
+        }
+
+        function appendlanguages(data) {            
+            if (data.length > 0) {
+                for (var x = 0; x < data.length; x++) {
+                    var controlBusqueda = "<div class='controlLenguaje' onClick='SeleccionaIdioma(this.id)' id=" + data[x].Id + ">"
+                                                + data[x].Nombre
+                                         + "</div>";
+                    $("#ResultadoBusqueda").append(controlBusqueda);
+                }
+            }
+            else {
+                var controlBusqueda = "<div class='controlLenguaje' onClick='SeleccionaIdioma(this.id)' id='ES'>"
+                                              + "Español"
+                                        + "</div>";
+                $("#ResultadoBusqueda").append(controlBusqueda);
+            }            
+            $("#" + localStorage.getItem("lenguajeApp")).click();
+        }
+
+        function SeleccionaIdioma(lenguaje)
+        {
+            $("#lenguajeSeleccionado")[0].value = lenguaje;
+            $(".lenguajeSelected").switchClass("lenguajeSelected", "controlLenguaje", 0);
+            $("#" + lenguaje).switchClass("controlLenguaje", "lenguajeSelected", 0);
+        }
+
+        function CambiaIdioma()
+        {
+            var lenguaje = $("#lenguajeSeleccionado")[0].value;           
+            localStorage.setItem("lenguajeApp", lenguaje);
+            if (lenguaje != "ES") {
+                $.ajax({
+                    type: "GET",
+                    url: ServiceURL + 'ObtenerRecursosLenguaje',
+                    data: { idLenguaje: lenguaje },
+                    dataType: 'Text',
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        for (var x = 0; x < data.length; x++) {
+                            switch (data[x].Identificador) {
+                                case "buscar":
+                                    localStorage.setItem("buscarTraducido", data[x].Traduccion);
+                                    break;
+                                case "descripción":
+                                    localStorage.setItem("descripcionTraducido", data[x].Traduccion);
+                                    break;
+                                case "explicación":
+                                    localStorage.setItem("explicacionTraducido", data[x].Traduccion);
+                                    break;
+                                case "guía interactiva":
+                                    localStorage.setItem("guiaTraducido", data[x].Traduccion);
+                                    break;
+                                case "historia":
+                                    localStorage.setItem("historiaTraducido", data[x].Traduccion);
+                                    break;
+                                case "idioma":
+                                    localStorage.setItem("idiomaTraducido", data[x].Traduccion);
+                                    break;
+                                case "mapa del museo":
+                                    localStorage.setItem("mapaTraducido", data[x].Traduccion);
+                                    break;
+                                case "notas curiosas":
+                                    localStorage.setItem("notasTraducido", data[x].Traduccion);
+                                    break;
+                                case "reconocimiento de arte":
+                                    localStorage.setItem("reconocimientoTraducido", data[x].Traduccion);
+                                    break;
+                                case "obras":
+                                    localStorage.setItem("obrasTraducido", data[x].Traduccion);
+                                    break;
+                                case "autores":
+                                    localStorage.setItem("autoresTraducido", data[x].Traduccion);
+                                    break;
+                                case "textoDefaultBusqueda":
+                                    localStorage.setItem("textDefaultTraducido", data[x].Traduccion);
+                                    break;
+                                case "textoBusquedaVacia":
+                                    localStorage.setItem("textBusquedaVaciaTraducido", data[x].Traduccion);
+                                    break;
+                            }
+                        }
+                        url = "index.html";
+                        $(location).attr('href', url);
+                    }
+                });
+            }
+            else {
+                url = "index.html";
+                $(location).attr('href', url);
+            }
+        }
+    </script>
+</body>
+</html>

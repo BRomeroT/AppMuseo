@@ -113,7 +113,7 @@
             <tr>
                 <td class="scan">&nbsp;</td>
                 <td class="esquinaScan">&nbsp;</td>
-                <td class="textoScan">escanear arte</td>
+                <td class="textoScan" id="reconocimientoArte">reconocimiento de arte</td>
             </tr>
         </table>
     </div>
@@ -146,17 +146,40 @@
         $(document).ready(function () {            
             app.initialize();
             localStorage.setItem("mostrarObras", "0");
+            $(document).bind("mobileinit", function () {
+                $.mobile.allowCrossDomainPages = true;
+            });
+            $.support.cors = true;
+            localStorage.setItem("ServerServiceURL", "http://localhost/Services/");
+            if (localStorage.getItem("lenguajeApp") == null || localStorage.getItem("lenguajeApp") == "") {
+                localStorage.setItem("lenguajeApp", "ES");
+            } else if (localStorage.getItem("lenguajeApp") != "ES") {                
+                $("#reconocimientoArte")[0].innerText = localStorage.getItem("reconocimientoTraducido");
+                $("#guiaInteractiva")[0].innerText = localStorage.getItem("guiaTraducido");
+                $("#mapaMuseo")[0].innerText = localStorage.getItem("mapaTraducido");
+                $("#buscar")[0].innerText = localStorage.getItem("buscarTraducido");
+                $("#idioma")[0].innerText = localStorage.getItem("idiomaTraducido");
+            }
             $.ajaxSetup({ cache: false });
-            var ServiceURL = 'http://localhost/Services/';            
+            var ServiceURL = localStorage.getItem("ServerServiceURL");
             $("#guiaInteractiva").click(function () {
                 localStorage.setItem("mostrarObras", "0");
                 url = "exposiciones.html";                
                 $(location).attr('href', url);
-            });            
-            //$("#ClaveaBuscar")[0].value = "53D74DC2-FC4B-4736-9E74-6842BC952022";
+            });
+
+            $("#buscar").click(function () {                
+                url = "busqueda.html";
+                $(location).attr('href', url);
+            });
+
+            $("#idioma").click(function () {
+                url = "idiomas.html";
+                $(location).attr('href', url);
+            });
 
             $("#scanner").click(function () {
-                EscanearCodigo();
+                EscanearCodigo();                
             });
             function EscanearCodigo() {                
                 document.addEventListener("intel.xdk.device.barcode.scan", function (evt) {                    

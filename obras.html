@@ -103,7 +103,7 @@
                 font-weight: bolder;
                 font-size: 20px;
                 padding-top: 25px;
-                padding-right: 20px;                
+                padding-right: 5px;
                 background-position-x:center;
                 background-position-y:center;
                 float:left;
@@ -129,7 +129,7 @@
                 background-image: url('img/Home.png');
                 -moz-background-size: 100%;
                 background-size: 100%;                
-                width: 20%;
+                width: 30%;
             }
             #mainMenu > #Headphone {
                 background-image: url('img/Headphone.png');
@@ -164,10 +164,9 @@
 </head>
 <body>
     <div id="mainMedia"> 
-        <h3 id="TituloExposicionh3">Titulo de la exposicon a mostrar</h3> 
-        <img src="img/Right.png" id="Mash3"/> 
+        <h3 id="TituloExposicionh3"></h3>         
         <div id="ImagenDiv" class="ClaseVisible" >
-            <img id="ImagenObra" src="img/logo.png" style="width:100%; height:100%" />
+            <img id="ImagenObra" style="width:100%; height:100%" />
         </div>
         <div id="VideoDiv" class="ClaseOculta" >
             <video controls id="SourceVideoTag" style="width:100%; height:100%" >                        
@@ -179,32 +178,33 @@
             <tr>
                 <td class="scanMedia">&nbsp;</td>                
                 <td class="esquinaScan">&nbsp;</td>
-                <td id="TituloObratd" class="textoScan">Arte Basura</td>
+                <td id="TituloObratd" class="textoScan"></td>
             </tr>
         </table>
+        <img src="img/Right.png" id="Mash3"/> 
     </div>
     <div id="mainContent">
-        <h5 id="Autorh5">Tim Noble y Sue Webster</h5>
+        <h5 id="Autorh5"></h5>
         <input id="IdExposicionHidden" type="hidden" />
         <input id="SecuenciaObraHidden" type="hidden" />
         <div data-role="page" id="index">
             <div class="ui-panorama PanoramaMedia">				
 				<div class='ui-panorama-items'>
 					<div class="ui-panorama-item" style="background-color:transparent;">						
-                        <h2 style="background-color:#be8bc9; background-image: url('img/Descripcion.png');">Descripción</h2>
-                        <p id="DescripcionObrap">Descripcion</p> 
+                        <h2 id="descripcionH2" style="background-color:#be8bc9; background-image: url('img/Descripcion.png');">Descripción</h2>
+                        <p id="DescripcionObrap"></p> 
 					</div>
 					<div class="ui-panorama-item" style="background-color:transparent;">
-						<h2 style="background-color:#00b3ff; background-image: url('img/Explicacion.png');">Explicación</h2>
-						<p id="ExplicacionObrap">Explicacion</p>
+						<h2 id="explicacionH2" style="background-color:#00b3ff; background-image: url('img/Explicacion.png');">Explicación</h2>
+						<p id="ExplicacionObrap"></p>
 					</div>	
                     <div class="ui-panorama-item" style="background-color:transparent;">
-						<h2  style="background-color:#b0d632; background-image: url('img/Historia.png');">Historia</h2>
-						<p id="HistoriaObrap">Hstoria</p>
+						<h2 id="historiaH2" style="background-color:#b0d632; background-image: url('img/Historia.png');">Historia</h2>
+						<p id="HistoriaObrap"></p>
 					</div>	
                      <div class="ui-panorama-item" style="background-color:transparent;">
-						<h2  style="background-color:#e1a446; background-image: url('img/Curiosidades.png');">Notas curiosas</h2>
-						<p id="CuriosidadesObrap">Curiosidades</p>
+						<h2 id="curiosidadesH2" style="background-color:#e1a446; background-image: url('img/Curiosidades.png');">Notas curiosas</h2>
+						<p id="CuriosidadesObrap"></p>
 					</div>					
 				</div>
 			</div>            
@@ -232,44 +232,35 @@
     <script type="text/javascript">       
         $(document).ready(function () {
             $.ajaxSetup({ cache: false });
-            var ServiceURL = 'http://localhost/Services/';
-            var idiomaSeleccionado = "ES";
+            $(document).bind("mobileinit", function () {
+                $.mobile.allowCrossDomainPages = true;
+            });
+            $.support.cors = true;
+            var ServiceURL = localStorage.getItem("ServerServiceURL");
+            var idiomaSeleccionado = localStorage.getItem("lenguajeApp");
+            if (localStorage.getItem("lenguajeApp") != "ES") {
+                $("#descripcionH2")[0].innerText = localStorage.getItem("descripcionTraducido");
+                $("#explicacionH2")[0].innerText = localStorage.getItem("explicacionTraducido");
+                $("#historiaH2")[0].innerText = localStorage.getItem("historiaTraducido");
+                $("#curiosidadesH2")[0].innerText = localStorage.getItem("notasTraducido");
+            }
             var urlVisitada = String(document.location.href);            
             if (urlVisitada.indexOf("?") >= 0)
-            {                
+            {
+                if (localStorage.getItem("AbiertaDesdeBuscar") == "1") {
+                    $("#Previous").addClass("ClaseOculta");
+                    $("#Next").addClass("ClaseOculta");
+                    localStorage.setItem("AbiertaDesdeBuscar", "0");
+                }
                 var idObtenido = urlVisitada.substring(urlVisitada.lastIndexOf("?") + 1, urlVisitada.lastIndexOf("?") + 37);                
                 $.ajax({
                     type: "GET",
                     url: ServiceURL + 'ObtenerInformacionObra',
-                    data: { idObraLeido: idObtenido, idiomaSeleccionado: idiomaSeleccionado },
+                    data: { idObraLeido: idObtenido, idiomaSeleccionado: idiomaSeleccionado,idExposicion:"" },
                     dataType: 'Text',
-                    success: function (data) {
-                        var res = $.parseJSON(data)                        
-                        $("#TituloExposicionh3")[0].innerHTML = res.TituloExposicion;
-                        $("#TituloObratd")[0].innerHTML = res.Titulo;
-                        $("#Autorh5")[0].innerHTML = res.Autor;
-                        $("#TituloObratd")[0].innerHTML = res.Titulo;
-                        if (res.Fotografias != null)
-                            $("#ImagenObra")[0].src = res.Fotografias;
-                        if (res.Videos == null) {
-                            $("#Mash3")[0].className = "ClaseOculta";
-                        }
-                        else {
-                            $("#SourceVideoTag")[0].src = res.Videos;
-                        }
-
-                        if (res.Audios != null)
-                        {
-                            $("#Headphone")[0].className = "ClaseVisible";
-                            $("#SourceAudioTag")[0].src = res.Audios;
-                        }
-                        $("#DescripcionObrap")[0].innerHTML = res.Descripcion;
-                        $("#ExplicacionObrap")[0].innerHTML = res.Explicacion;
-                        $("#HistoriaObrap")[0].innerHTML = res.Historia;
-                        $("#CuriosidadesObrap")[0].innerHTML = res.NotasCuriosas;
-                        $("#IdExposicionHidden")[0].value = res.idExposicionPertenece;
-                        $("#SecuenciaObraHidden")[0].value = res.SecuenciaObra;
-                    }
+                    success: function (data) {                        
+                        CargaDatos(data);
+                    }            
                 });
             }
                         
@@ -298,14 +289,12 @@
             $("#Next").click(function () {                
                 $.ajax({
                     type: "GET",
-                    url: ServiceURL + 'VerificarSiguienteObra',
-                    data: { idExposicion: $("#IdExposicionHidden")[0].value, secuenciaObra: $("#SecuenciaObraHidden")[0].value },
+                    url: ServiceURL + 'ObtenerSiguienteObra',
+                    data: { idExposicion: $("#IdExposicionHidden")[0].value, secuenciaObra: $("#SecuenciaObraHidden")[0].value , idiomaSeleccionado : idiomaSeleccionado },
                     dataType: 'Text',
                     success: function (data) {                        
-                        if (data != "") {
-                            data = data.replace('"', '');
-                            url = "obras.html?" + data;
-                            $(location).attr('href', url);
+                        if (data != "") {                            
+                            CargaDatos(data);                            
                         }
                     }
                 });
@@ -321,17 +310,15 @@
                 {
                     $.ajax({
                         type: "GET",
-                        url: ServiceURL + 'ObteneridObraAnterior',
-                        data: { idExposicion: $("#IdExposicionHidden")[0].value, secuenciaObra: $("#SecuenciaObraHidden")[0].value },
+                        url: ServiceURL + 'ObtenerObraAnterior',
+                        data: { idExposicion: $("#IdExposicionHidden")[0].value, secuenciaObra: $("#SecuenciaObraHidden")[0].value, idiomaSeleccionado: idiomaSeleccionado },
                         dataType: 'Text',
                         success: function (data) {
                             if (data != "") {
-                                data = data.replace('"', '');
-                                url = "obras.html?" + data;
-                                $(location).attr('href', url);
+                                CargaDatos(data);                              
                             }
                         }
-                    });
+                    });                   
                 }
             });
 
@@ -339,6 +326,35 @@
                 url = "index.html";
                 $(location).attr('href', url);
             });
+
+            function CargaDatos(data)
+            {
+                var res = $.parseJSON(data)
+                $("#TituloExposicionh3")[0].innerHTML = res.TituloExposicion;
+                $("#TituloObratd")[0].innerHTML = res.Titulo;
+                $("#Autorh5")[0].innerHTML = res.Autor;
+                $("#TituloObratd")[0].innerHTML = res.Titulo;
+                if (res.Fotografias != null)
+                    $("#ImagenObra")[0].src = res.Fotografias;
+                if (res.Videos == null) {
+                    $("#Mash3")[0].className = "ClaseOculta";
+                }
+                else {
+                    $("#Mash3")[0].className = "ClaseVisible";
+                    $("#SourceVideoTag")[0].src = res.Videos;
+                }
+
+                if (res.Audios != null) {
+                    $("#Headphone")[0].className = "ClaseVisible";
+                    $("#SourceAudioTag")[0].src = res.Audios;
+                }
+                $("#DescripcionObrap")[0].innerHTML = res.Descripcion;
+                $("#ExplicacionObrap")[0].innerHTML = res.Explicacion;
+                $("#HistoriaObrap")[0].innerHTML = res.Historia;
+                $("#CuriosidadesObrap")[0].innerHTML = res.NotasCuriosas;
+                $("#IdExposicionHidden")[0].value = res.idExposicionPertenece;
+                $("#SecuenciaObraHidden")[0].value = res.SecuenciaObra;               
+            }
         });
         app.initialize();
         (function ($) {
